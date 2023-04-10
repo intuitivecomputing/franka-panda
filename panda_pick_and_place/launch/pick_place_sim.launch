@@ -1,0 +1,9 @@
+<launch>
+
+  <!-- launch Rviz and moveit! -->
+  <include file="$(find panda_moveit_config)/launch/demo.launch" pass_all_args="true"/>
+
+  <!-- execute the pnp_sim program -->
+  <node name="pick_place_cpp" pkg="panda_pick_and_place" type="pnp_sim"/>
+
+</launch>

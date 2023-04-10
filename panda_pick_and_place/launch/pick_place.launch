@@ -1,0 +1,14 @@
+<launch>
+
+  <!-- connect to the franka robot and launch Rviz and moveit! -->
+  <include file="$(find panda_moveit_config)/launch/franka_control.launch">
+    <arg name="robot_ip" value="172.16.0.2"/>
+    <arg name="load_gripper" value="true"/>
+
+  </include>
+
+  <!-- execute the pnp program -->
+    <node name="pick_place_cpp" pkg="panda_pick_and_place" type="pnp"/>
+
+
+</launch>
