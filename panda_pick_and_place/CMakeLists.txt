@@ -52,14 +52,12 @@ include_directories(
 #############
 ## Install ##
 #############
-add_executable(pnp_long src/pnp_long.cpp)
-add_executable(pnp_short src/pnp_short.cpp)
+add_executable(pnp src/pnp.cpp)
 add_executable(pnp_sim src/pnp_sim.cpp)
 
-target_link_libraries(pnp_long ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(pnp_short ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(pnp ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(pnp_sim ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-install(TARGETS pnp_long pnp_short pnp_sim  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(TARGETS pnp pnp_sim  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

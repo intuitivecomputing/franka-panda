@@ -1,5 +1,4 @@
 <launch>
-  <arg name="pipe" default="long" />
 
   <!-- connect to the franka robot and launch Rviz and moveit! -->
   <include file="$(find panda_moveit_config)/launch/franka_control.launch">
@@ -8,16 +7,8 @@
 
   </include>
 
-<group if="$(eval arg('pipe') == 'long')">
   <!-- execute the pnp program -->
-    <node name="pick_place_cpp" pkg="panda_pick_and_place" type="pnp_long"/>
+    <node name="pick_place_cpp" pkg="panda_pick_and_place" type="pnp"/>
 
-</group>
-
-<group if="$(eval arg('pipe') == 'short')">
-  <!-- execute the pnp program -->
-    <node name="pick_place_cpp" pkg="panda_pick_and_place" type="pnp_short"/>
-
-</group>
 
 </launch>

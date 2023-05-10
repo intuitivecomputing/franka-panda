@@ -10,7 +10,6 @@ The purpose of this executable is to verify the trajectory and the pose of the c
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <actionlib/client/simple_action_client.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <franka_gripper/GraspAction.h>
 #include <franka_gripper/MoveAction.h>
@@ -97,21 +96,18 @@ void addCollisionObjects(moveit::planning_interface::PlanningSceneInterface& pla
   collision_objects[1].primitives.resize(1);
   collision_objects[1].primitives[0].type = collision_objects[1].primitives[0].BOX;
   collision_objects[1].primitives[0].dimensions.resize(3);
-  collision_objects[1].primitives[0].dimensions[0] = 1.525;
-  collision_objects[1].primitives[0].dimensions[1] = 0.65;
+  collision_objects[1].primitives[0].dimensions[0] = 0.65;
+  collision_objects[1].primitives[0].dimensions[1] = 1.525;
   collision_objects[1].primitives[0].dimensions[2] = 0.715;
 
   /* Define the pose of the table. */
   collision_objects[1].primitive_poses.resize(1);
-  collision_objects[1].primitive_poses[0].position.x = 0.4;
-  collision_objects[1].primitive_poses[0].position.y = -0.78;
+  collision_objects[1].primitive_poses[0].position.x = -0.77;
+  collision_objects[1].primitive_poses[0].position.y = 0.32;
   collision_objects[1].primitive_poses[0].position.z = -0.39;
   collision_objects[1].primitive_poses[0].orientation.w = 1.0;
 
-  // tf2::Quaternion obj_orientation;
-  // obj_orientation.setRPY(0, 0, -M_PI / 2);  // A quarter turn about the x-axis and the z-axis
-  // collision_objects[1].primitive_poses[0].orientation = tf2::toMsg(obj_orientation);
-  // collision_objects[1].operation = collision_objects[1].ADD;
+  collision_objects[1].operation = collision_objects[1].ADD;
 
   // Add the object on the table to avoid collision
   collision_objects[2].id = "screen";
@@ -135,7 +131,7 @@ void addCollisionObjects(moveit::planning_interface::PlanningSceneInterface& pla
   collision_objects[2].operation = collision_objects[1].ADD;
 
   // Add the operator 
-  collision_objects[3].id = "wall";
+  collision_objects[3].id = "person";
   collision_objects[3].header.frame_id = "panda_link0";
 
   /* Define the primitive and its dimensions. */
@@ -143,13 +139,13 @@ void addCollisionObjects(moveit::planning_interface::PlanningSceneInterface& pla
   collision_objects[3].primitives[0].type = collision_objects[2].primitives[0].BOX;
   collision_objects[3].primitives[0].dimensions.resize(3);
   collision_objects[3].primitives[0].dimensions[0] = 0.40;
-  collision_objects[3].primitives[0].dimensions[1] = 1.65;
+  collision_objects[3].primitives[0].dimensions[1] = 0.65;
   collision_objects[3].primitives[0].dimensions[2] = 1.5;
 
   /* Define the pose of the person. */
   collision_objects[3].primitive_poses.resize(1);
-  collision_objects[3].primitive_poses[0].position.x = -0.65;
-  collision_objects[3].primitive_poses[0].position.y = 0;
+  collision_objects[3].primitive_poses[0].position.x = 0.25;
+  collision_objects[3].primitive_poses[0].position.y = 0.65;
   collision_objects[3].primitive_poses[0].position.z = 0;
   collision_objects[3].primitive_poses[0].orientation.w = 1.0;
 
@@ -202,63 +198,39 @@ int main(int argc, char** argv)
     // 1. Move to home position
     goHome(move_group_interface_arm, my_plan_arm);
 
-    // 2. Open the gripper
-    moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
-    openGripper(move_group_interface_gripper, my_plan_gripper);
 
-    // 3. Place the TCP (Tool Center Point, the tip of the robot) above the blue box
+    // 2. Place the TCP (Tool Center Point, the tip of the robot) above the blue box
     geometry_msgs::PoseStamped current_pose;
     current_pose = move_group_interface_arm.getCurrentPose("panda_link8");
-    std::vector<geometry_msgs::Pose> waypoints1;
     geometry_msgs::Pose target_pose1;
-    
-    // target_pose1.orientation = current_pose.pose.orientation;
-    target_pose1.position.x = 0.6;
-    target_pose1.position.y = -0.286;
-    target_pose1.position.z = 0.024;
-    target_pose1.orientation.x = 0.576;
-    target_pose1.orientation.y = -0.263;
-    target_pose1.orientation.z = 0.304;
-    target_pose1.orientation.w = 0.712;
-
-
-// - Translation: [0.603, -0.286, 0.024]
-// - Rotation: in Quaternion [0.576, -0.263, 0.304, 0.712]
-//             in RPY (radian) [1.279, -0.811, 0.188]
-//             in RPY (degree) [73.281, -46.456, 10.793]
-
-
-
-    waypoints1.push_back(target_pose1);
+  
+    target_pose1.orientation = current_pose.pose.orientation;
+    target_pose1.position.x = -0.6;
+    target_pose1.position.y = 0.1;
+    target_pose1.position.z = 0.22;
     move_group_interface_arm.setPoseTarget(target_pose1);
+
+    bool success = (move_group_interface_arm.plan(my_plan_arm) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+
+    ROS_INFO_NAMED("tutorial", "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
+
+    move_group_interface_arm.move();
+
+
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
+
+    // 3. Open the gripper
+    openGripper(move_group_interface_gripper, my_plan_gripper);
 
     // 4. Move the TCP close to the object
-
-// - Translation: [0.426, -0.353, 0.017]
-// - Rotation: in Quaternion [0.510, -0.227, 0.285, 0.780]
-//             in RPY (radian) [1.055, -0.699, 0.282]
-//             in RPY (degree) [60.451, -40.051, 16.131]
-
-    target_pose1.position.x = 0.426;
-    target_pose1.position.y = -0.35;
-    target_pose1.position.z = 0.017;
-    // target_pose1.orientation.x = 0.510;
-    // target_pose1.orientation.y = -0.227;
-    // target_pose1.orientation.z = 0.285;
-    // target_pose1.orientation.w = 0.780;
+    target_pose1.position.z = target_pose1.position.z - 0.1;
     move_group_interface_arm.setPoseTarget(target_pose1);
-    waypoints1.push_back(target_pose1);
 
-    moveit_msgs::RobotTrajectory trajectory1;
-    const double eef_step = 0.01;
-    const double jump_threshold = 0.0;
-    move_group_interface_arm.computeCartesianPath(waypoints1, eef_step, jump_threshold, trajectory1);
-    // success = (move_group_interface_arm.plan(my_plan_arm) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    success = (move_group_interface_arm.plan(my_plan_arm) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
-    // ROS_INFO_NAMED("tutorial", "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
-    move_group_interface_arm.execute(trajectory1);
+    ROS_INFO_NAMED("tutorial", "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
 
-    // move_group_interface_arm.move();
+    move_group_interface_arm.move();
 
     // 5. Close the  gripper
     double max_effort = 3;    // gripping force (N) 
@@ -266,52 +238,27 @@ int main(int argc, char** argv)
     closedGripper(move_group_interface_gripper, my_plan_gripper);
 
 
-    // 6. Move up the gripper
-    std::vector<geometry_msgs::Pose> waypoints2;
+    // 6. Move the TCP above the plate
+    target_pose1.position.z = target_pose1.position.z + 0.2;
+    target_pose1.position.x = target_pose1.position.x + 0.5;
+    target_pose1.position.y = target_pose1.position.y + 0.2;
+    move_group_interface_arm.setPoseTarget(target_pose1);
 
-    target_pose1.position.z = 0.15;
-    waypoints2.push_back(target_pose1);
+    success = (move_group_interface_arm.plan(my_plan_arm) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
+    ROS_INFO_NAMED("tutorial", "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
 
-    // 6. Move the TCP near the person
-    geometry_msgs::Pose target_pose2;
+    move_group_interface_arm.move();
 
-    target_pose2.position.x = 0.3;
-    target_pose2.position.y = 0;
-    target_pose2.position.z = 0.5;
-    target_pose2.orientation = current_pose.pose.orientation;
+    // 7. Lower the TCP above the plate
+    target_pose1.position.z = target_pose1.position.z - 0.2;
+    move_group_interface_arm.setPoseTarget(target_pose1);
 
-    waypoints2.push_back(target_pose2);
-    moveit_msgs::RobotTrajectory trajectory2;
-    move_group_interface_arm.computeCartesianPath(waypoints2, eef_step, jump_threshold, trajectory2);
- 
-    move_group_interface_arm.execute(trajectory2);
+    success = (move_group_interface_arm.plan(my_plan_arm) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
+    ROS_INFO_NAMED("tutorial", "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
 
-    // 7. Lower the TCP to put down the object
-    std::vector<geometry_msgs::Pose> waypoints3;
-
-    geometry_msgs::Pose target_pose3;
-
-    target_pose3.position.x = 0.095;
-    target_pose3.position.y = 0.35;
-    target_pose3.position.z = 0.154;
-    target_pose3.orientation.x = -0.407;
-    target_pose3.orientation.y = 0.913;
-    target_pose3.orientation.z = 0.027;
-    target_pose3.orientation.w = 0.010;
-    waypoints3.push_back(target_pose3);
-    moveit_msgs::RobotTrajectory trajectory3;
-    move_group_interface_arm.computeCartesianPath(waypoints3, eef_step, jump_threshold, trajectory3);
- 
-    move_group_interface_arm.execute(trajectory3);
-
-    // move_group_interface_arm.setPoseTarget(target_pose3);
-
-    // bool success = (move_group_interface_arm.plan(my_plan_arm) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-
-    // ROS_INFO_NAMED("tutorial", "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
-
+    move_group_interface_arm.move();
 
     // 8. Open the gripper
     openGripper(move_group_interface_gripper, my_plan_gripper);
