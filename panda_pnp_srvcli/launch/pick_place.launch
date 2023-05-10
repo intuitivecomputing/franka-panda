@@ -1,0 +1,27 @@
+<launch>
+  <arg name="sim" default="false" />
+  <arg name="voice" default="false" />
+
+  <group if="$(eval arg('voice') == true)">
+      <!-- initiate the alexa skill server and pnp client -->
+      <node name="alexa_ros" pkg="alexa_pnp" type="alexa_skill_ros.py"/>
+  </group>
+
+  <group if="$(eval arg('sim') == false)">
+      <!-- connect to the franka robot and launch Rviz and moveit! -->
+      <include file="$(find panda_moveit_config)/launch/franka_control.launch">
+        <arg name="robot_ip" value="172.16.0.2"/>
+        <arg name="load_gripper" value="true"/>
+      </include>
+      <!-- execute the pnp program -->
+      <node name="pick_place_cpp" pkg="panda_pnp_srvcli" type="pnp_server"/>
+  </group>
+
+  <group if="$(eval arg('sim') == true)">
+      <!-- launch Rviz and moveit! -->
+      <include file="$(find panda_moveit_config)/launch/demo.launch" pass_all_args="true"/>
+      <!-- execute the pnp program -->
+      <node name="pick_place_cpp" pkg="panda_pnp_srvcli" type="pnp_sim"/>
+  </group>
+
+</launch>
