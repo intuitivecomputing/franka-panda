@@ -2,6 +2,12 @@
 # Franka Panda Setup Guide
 This guide describes how to setup the Franka Panda and how to use the Desk interface as well as ROS to control it. 
 
+## Installation for libfranka and franka_ros
+libfranka is the open source C++ interface for the panda robot, and franka_ros connects it with the entire ROS ecosystem.
+Follow the official guide to finish setting up the linux PC and install the latest version of libfranka and franka_ros.
+[official panda setup documentation](https://frankaemika.github.io/docs/installation_linux.html)
+
+
 ## Use Desk to operate Panda
 There are two ways to connect the robot to the workstation PC, the first and most simple way to do this is to connect the PC and the robot base using an Ethernet cable. The downside for this is that by choosing this option, you can only operate the robot using Desk, and you won't be able to use ROS or other interfaces to control it.
 
