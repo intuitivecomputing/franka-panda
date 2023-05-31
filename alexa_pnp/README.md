@@ -30,7 +30,7 @@ create an account and follow the setup and installation steps below:
 
 1. Open a termianl and type in ```./ngrok http 5000```
 2. Copy the HTTPS endpoint link at the end in the ngrok terminal and paste it in the alexa skill's endpoint settings
-3. Open another terminal and go to the workspace
+3. Open another terminal and go to the workspace (for ICL students, panta_test_ws)
 4. Build the packages and source it
 ```
     catkin build
