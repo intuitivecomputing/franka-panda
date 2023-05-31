@@ -59,7 +59,9 @@ of the Hazardous Zone.
 
 6. half-press the external enabling button to activate the robot
 
-7. Launch a terminal and enter ```roslaunch franka_example_controllers move_to_start.launch robot_ip:=172.16.0.2 load_gripper:=true robot:=panda```  before using any other ROS controllers to control the robot (otherwise it will generate an error, since all the example starts from this starting position).
+7. Launch a terminal. Enter your desired workspace (i.e. catkin_ws). Source the setup file (i.e. source devel/setup.bash). 
+
+8. In the terminal, enter ```roslaunch franka_example_controllers move_to_start.launch robot_ip:=172.16.0.2 load_gripper:=true robot:=panda```  before using any other ROS controllers to control the robot (otherwise it will generate an error, since all the example starts from this starting position).
 
 &nbsp;
 
