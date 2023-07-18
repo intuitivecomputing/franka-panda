@@ -3,6 +3,8 @@ project(panda_pnp_srvcli)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+# set(jsoncpp_DIR "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/jsoncpp")
+# list(APPEND CMAKE_PREFIX_PATH ${jsoncpp_DIR})
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -17,7 +19,12 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   xmlrpcpp
+  # jsoncpp  
 )
+find_package(PkgConfig REQUIRED)
+# get_target_property(JSON_INC_PATH jsoncpp INTERFACE_INCLUDE_DIRECTORIES)
+# include_directories(${JSON_INC_PATH})
+pkg_check_modules(JSONCPP jsoncpp)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -124,6 +131,7 @@ CATKIN_DEPENDS actionlib actionlib_msgs control_msgs franka_gripper moveit_tutor
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${JSONCPP_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -159,15 +167,18 @@ include_directories(
 #############
 ## Install ##
 #############
+# link_libraries(${JSONCPP_LIBRARIES})
 add_executable(pnp_server src/pnp_server.cpp)
 add_executable(pnp_sim src/pnp_sim.cpp)
 add_executable(pnp_client src/pnp_client.cpp)
-
-target_link_libraries(pnp_server ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_executable(pnp_client_s2t src/pnp_client_s2t.cpp)
+# target_link_libraries(${PROJECT_NAME} jsoncpp_lib)
+target_link_libraries(pnp_server ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${JSONCPP_INCLUDE_DIRS} jsoncpp)
 target_link_libraries(pnp_sim ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(pnp_client ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(pnp_client_s2t ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${JSONCPP_INCLUDE_DIRS} jsoncpp)
 
-install(TARGETS pnp_server pnp_sim pnp_client RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(TARGETS pnp_server pnp_sim pnp_client pnp_client_s2t RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 # all install targets should use catkin DESTINATION variables

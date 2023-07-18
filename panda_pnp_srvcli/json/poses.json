@@ -1,0 +1,138 @@
+{"vel":0.8,
+"acc":0.55,
+"step":0.02,
+"jump":6.0,
+"condition":1,
+"long_prepick_position": {
+    "x": 0.580,
+    "y": 0.106,
+    "z": -0.075
+  },
+"long_prepick_orientation": {
+    "x": -0.541,
+    "y": 0.253,
+    "z": 0.338,
+    "w": 0.728
+},
+"long_pick_position": {
+    "x": 0.586,
+    "y": 0.170,
+    "z": -0.05
+  },
+"long_pick_orientation": {
+    "x": -0.528,
+    "y": 0.245,
+    "z": 0.352,
+    "w": 0.733
+},
+"short_prepick_position": {
+    "x": 0.338,
+    "y": 0.059,
+    "z": -0.072
+  },
+"short_prepick_orientation": {
+    "x": -0.569,
+    "y": 0.250,
+    "z": 0.340,
+    "w": 0.706
+},
+"short_pick_position": {
+    "x": 0.333,
+    "y": 0.162,
+    "z": -0.05
+  },
+"short_pick_orientation": {
+    "x": -0.528,
+    "y": 0.245,
+    "z": 0.352,
+    "w": 0.733
+},
+"preplace_position": {
+    "x": -0.176,
+    "y": 0.445,
+    "z": 0.433
+  },
+"preplace_orientation": {
+    "x": 0.915,
+    "y": 0.403,
+    "z": 0.026,
+    "w": -0.008
+},
+"pipe_place_position": {
+    "x": -0.230,
+    "y": 0.520,
+    "z": 0.210
+  },
+"pipe_place_orientation": {
+    "x": 0.885,
+    "y": 0.466,
+    "z": 0.002,
+    "w": -0.018
+},
+"postplace_position": {
+    "x": -0.170,
+    "y": 0.410,
+    "z": 0.395
+  },
+"postplace_orientation": {
+    "x": 0.986,
+    "y": 0.166,
+    "z": -0.017,
+    "w": -0.005
+},
+"joint_prepick_position": {
+    "x": -0.258,
+    "y": 0.239,
+    "z": 0.332
+  },
+"joint_prepick_orientation": {
+    "x": 0.924,
+    "y": 0.383,
+    "z": -0.000,
+    "w": 0.000
+},
+"joint_pick_position": {
+    "x": -0.258,
+    "y": 0.239,
+    "z": 0.132
+  },
+"joint_pick_orientation": {
+    "x": 0.924,
+    "y": 0.383,
+    "z": -0.000,
+    "w": 0.000
+},
+"joint_preplace_position": {
+    "x": -0.310,
+    "y": -0.10,
+    "z": 0.8
+  },
+"joint_preplace_orientation": {
+    "x": 0.378,
+    "y": 0.925,
+    "z": -0.011,
+    "w": -0.036
+},
+"joint_place_position": {
+    "x": 0.051,
+    "y": -0.403,
+    "z": 0.545
+  },
+"joint_place_orientation": {
+    "x": 0.394,
+    "y": 0.919,
+    "z": -0.013,
+    "w": -0.016
+},
+"joint_postplace_position": {
+    "x": -0.207,
+    "y": -0.394,
+    "z": 0.611
+  },
+"joint_postplace_orientation": {
+    "x": -0.161,
+    "y": -0.581,
+    "z": 0.133,
+    "w": 0.787
+},
+}
