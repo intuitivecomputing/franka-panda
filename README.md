@@ -201,5 +201,19 @@ If you don't want to use voice control, you can also use ros client to send requ
     rosrun panda_pnp_srvcli pnp_client {pipe_type}
 ```
 
+## Resolving package issues
+
+When using catkin build to build the packages, there might be an error indicating that the cv-bridge package is missing. This might be caused by the installing the ffmpeg package required by whisper, which accidently removed the opencv package, resulting in this issue. To resolve this, please follow the steps:
+
+1. sudo aptitude install libopencv-dev
+2. hit "n" twice and then hit "Y" twice to remove the unnecessary packages
+3. sudo aptitude install libopencv-dev
+4. hit "n" twice and then hit "Y" twice to install opencv
+5. sudo apt install ros-noetic-cv-bridge
+
+After this, you should be able to build the packages without error. However, the problem is now you have to reinstall the ffmpeg package for whisper when you want to use it. Use the following command to install it. Once it is installed, you'll need to follow the steps above again if you want to use catkin build to build the packages.
+
+1. sudo apt-get -qq install -y ffmpeg 
+
 
  
