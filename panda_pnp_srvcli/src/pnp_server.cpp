@@ -32,7 +32,9 @@ By sending a request of "short" or "long", it will pick up the desired pipe for 
 typedef actionlib::SimpleActionClient<franka_gripper::GraspAction> GraspClient; 
 typedef actionlib::SimpleActionClient<franka_gripper::MoveAction> MoveClient; 
 
-
+double deg_to_rad(double deg){
+  return deg/180 * M_PI;
+}
 // The openGripper function is a void function that takes a MoveClient object as its parameter.
 // This function is responsible for opening the gripper of the Franka robot using the franka_gripper package's MoveAction action client.
 void openGripper(MoveClient& gripper_client)
@@ -105,21 +107,61 @@ void goHome2(moveit::planning_interface::MoveGroupInterface& move_group, moveit:
     move_group.move();
 }
 
-void goHome3(moveit::planning_interface::MoveGroupInterface& move_group, moveit::planning_interface::MoveGroupInterface::Plan plan_arm)
+void pre_dump(moveit::planning_interface::MoveGroupInterface& move_group, moveit::planning_interface::MoveGroupInterface::Plan plan_arm)
 {
    std::map<std::string, double> home;
-   home = {{"panda_joint1", -1.57079632679},
-           {"panda_joint2", -0.785398163397},
-           {"panda_joint3", 0},
-           {"panda_joint4", -2.35619449019},
-           {"panda_joint5", 0},
-           {"panda_joint6", 1.57079632679},
-           {"panda_joint7", 2.35619448}};
+   double joint1 = -9;
+   double joint2 = 41;
+   double joint3 = -23;
+   double joint4 = -105;
+   double joint5 = 70;
+   double joint6 = 156;
+   double joint7 = 133;
+   home = {{"panda_joint1", deg_to_rad(joint1)},
+           {"panda_joint2", deg_to_rad(joint2)},
+           {"panda_joint3", deg_to_rad(joint3)},
+           {"panda_joint4", deg_to_rad(joint4)},
+           {"panda_joint5", deg_to_rad(joint5)},
+           {"panda_joint6", deg_to_rad(joint6) },
+           {"panda_joint7", deg_to_rad(joint7)}};
 
     move_group.setJointValueTarget(home);
     bool success = (move_group.plan(plan_arm) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     ROS_INFO_NAMED("tutorial", "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
     move_group.move();
+}
+
+void dump(moveit::planning_interface::MoveGroupInterface& move_group, moveit::planning_interface::MoveGroupInterface::Plan plan_arm)
+{
+  std::map<std::string, double> home;
+  std::string main_share_dir = ros::package::getPath("panda_pnp_srvcli");
+  std::ifstream config_file(main_share_dir + "/json/poses.json");
+  if (!config_file.is_open())
+  {
+      std::cout<<"failed to read config json file"<<std::endl;
+  }
+  Json::Reader reader;
+  Json::Value pose_config;
+  reader.parse(config_file, pose_config);
+  double joint1 = pose_config["joint_dump"]["joint1"].asFloat();;
+  double joint2 = pose_config["joint_dump"]["joint2"].asFloat();;
+  double joint3 = pose_config["joint_dump"]["joint3"].asFloat();;
+  double joint4 = pose_config["joint_dump"]["joint4"].asFloat();;
+  double joint5 = pose_config["joint_dump"]["joint5"].asFloat();;
+  double joint6 = pose_config["joint_dump"]["joint6"].asFloat();;
+  double joint7 = pose_config["joint_dump"]["joint7"].asFloat();;
+  home = {{"panda_joint1", deg_to_rad(joint1)},
+          {"panda_joint2", deg_to_rad(joint2)},
+          {"panda_joint3", deg_to_rad(joint3)},
+          {"panda_joint4", deg_to_rad(joint4)},
+          {"panda_joint5", deg_to_rad(joint5)},
+          {"panda_joint6", deg_to_rad(joint6) },
+          {"panda_joint7", deg_to_rad(joint7)}};
+
+  move_group.setJointValueTarget(home);
+  bool success = (move_group.plan(plan_arm) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  ROS_INFO_NAMED("tutorial", "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
+  move_group.move();
 }
 
 // The addCollisionObjects function creates two tables as collision objects with defined dimensions and positions in the scene.
@@ -495,29 +537,52 @@ bool pnp_execute(panda_pnp_srvcli::PnpRequest::Request &req, panda_pnp_srvcli::P
 
         // go to preplace location
         // goHome2(move_group_interface_arm, my_plan_arm);
-        // goHome(move_group_interface_arm, my_plan_arm);
-        goHome3(move_group_interface_arm, my_plan_arm);
+        goHome(move_group_interface_arm, my_plan_arm);
+        // pre_dump(move_group_interface_arm, my_plan_arm);
+        dump(move_group_interface_arm, my_plan_arm);
+        goHome(move_group_interface_arm, my_plan_arm);
 
-        // dump the joint into the bucket
-        std::vector<geometry_msgs::Pose> waypoints5;
+        // std::vector<geometry_msgs::Pose> waypoints10;
 
-        geometry_msgs::Pose target_pose4;
+        // geometry_msgs::Pose target_pose10;
 
-        target_pose4.position.x = pose_config["joint_postplace_position"]["x"].asFloat();
-        target_pose4.position.y = pose_config["joint_postplace_position"]["y"].asFloat();
-        target_pose4.position.z = pose_config["joint_postplace_position"]["z"].asFloat();
-        target_pose4.orientation.x = pose_config["joint_postplace_orientation"]["x"].asFloat();
-        target_pose4.orientation.y = pose_config["joint_postplace_orientation"]["y"].asFloat();
-        target_pose4.orientation.z = pose_config["joint_postplace_orientation"]["z"].asFloat();
-        target_pose4.orientation.w = pose_config["joint_postplace_orientation"]["w"].asFloat();
-        waypoints5.push_back(target_pose4);
+        // target_pose10.position.x = pose_config["joint_place_position"]["x"].asFloat();
+        // target_pose10.position.y = pose_config["joint_place_position"]["y"].asFloat();
+        // target_pose10.position.z = pose_config["joint_place_position"]["z"].asFloat();
+        // target_pose10.orientation.x = pose_config["joint_place_orientation"]["x"].asFloat();
+        // target_pose10.orientation.y = pose_config["joint_place_orientation"]["y"].asFloat();
+        // target_pose10.orientation.z = pose_config["joint_place_orientation"]["z"].asFloat();
+        // target_pose10.orientation.w = pose_config["joint_place_orientation"]["w"].asFloat();
+        // waypoints10.push_back(target_pose10);
 
-        moveit_msgs::RobotTrajectory trajectory5;
-        move_group_interface_arm.computeCartesianPath(waypoints5, eef_step, jump_threshold, trajectory5);
-        r_trajec.setRobotTrajectoryMsg(*move_group_interface_arm.getCurrentState(), trajectory5);
-        iptp.computeTimeStamps(r_trajec, max_vel_factor, max_acc_factor);
-        r_trajec.getRobotTrajectoryMsg(trajectory5);
-        move_group_interface_arm.execute(trajectory5);
+        // moveit_msgs::RobotTrajectory trajectory10;
+        // move_group_interface_arm.computeCartesianPath(waypoints10, eef_step, jump_threshold, trajectory10);
+        // r_trajec.setRobotTrajectoryMsg(*move_group_interface_arm.getCurrentState(), trajectory10);
+        // iptp.computeTimeStamps(r_trajec, max_vel_factor, max_acc_factor);
+        // r_trajec.getRobotTrajectoryMsg(trajectory10);
+        // move_group_interface_arm.execute(trajectory10);
+
+
+        // // dump the joint into the bucket
+        // std::vector<geometry_msgs::Pose> waypoints5;
+
+        // geometry_msgs::Pose target_pose4;
+
+        // target_pose4.position.x = pose_config["joint_postplace_position"]["x"].asFloat();
+        // target_pose4.position.y = pose_config["joint_postplace_position"]["y"].asFloat();
+        // target_pose4.position.z = pose_config["joint_postplace_position"]["z"].asFloat();
+        // target_pose4.orientation.x = pose_config["joint_postplace_orientation"]["x"].asFloat();
+        // target_pose4.orientation.y = pose_config["joint_postplace_orientation"]["y"].asFloat();
+        // target_pose4.orientation.z = pose_config["joint_postplace_orientation"]["z"].asFloat();
+        // target_pose4.orientation.w = pose_config["joint_postplace_orientation"]["w"].asFloat();
+        // waypoints5.push_back(target_pose4);
+
+        // moveit_msgs::RobotTrajectory trajectory5;
+        // move_group_interface_arm.computeCartesianPath(waypoints5, eef_step, jump_threshold, trajectory5);
+        // r_trajec.setRobotTrajectoryMsg(*move_group_interface_arm.getCurrentState(), trajectory5);
+        // iptp.computeTimeStamps(r_trajec, max_vel_factor, max_acc_factor);
+        // r_trajec.getRobotTrajectoryMsg(trajectory5);
+        // move_group_interface_arm.execute(trajectory5);
 
         // goHome(move_group_interface_arm, my_plan_arm);
 

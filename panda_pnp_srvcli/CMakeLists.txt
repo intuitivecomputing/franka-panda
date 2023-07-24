@@ -174,7 +174,7 @@ add_executable(pnp_client src/pnp_client.cpp)
 add_executable(pnp_client_s2t src/pnp_client_s2t.cpp)
 # target_link_libraries(${PROJECT_NAME} jsoncpp_lib)
 target_link_libraries(pnp_server ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${JSONCPP_INCLUDE_DIRS} jsoncpp)
-target_link_libraries(pnp_sim ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(pnp_sim ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${JSONCPP_INCLUDE_DIRS} jsoncpp)
 target_link_libraries(pnp_client ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(pnp_client_s2t ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${JSONCPP_INCLUDE_DIRS} jsoncpp)
 

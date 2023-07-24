@@ -63,7 +63,7 @@ public:
     std::vector<std::string> long_keywords = {"long", "lone", "green", "lom"};
     std::vector<std::string> pipe_keywords = {"pipe", "type", "pie", "pita", "eye", "high"};
     std::vector<std::string> joint_keywords = {"joint", "join"};
-    std::vector<std::string> report_keywords = {"report", "reported", "reporting", "reports"};
+    std::vector<std::string> report_keywords = {"report", "reported", "reporting", "reports", "bad", "bat"};
     ros::NodeHandle n;
     ros::ServiceClient client = n.serviceClient<panda_pnp_srvcli::PnpRequest>("panda_pnp_service");
     panda_pnp_srvcli::PnpRequest srv;
@@ -81,7 +81,7 @@ public:
     std_msgs::String pub_msg;
 
 
-    if (containsAny(message, short_keywords) && containsAny(message, pipe_keywords)) {
+    if (containsAny(message, short_keywords) && containsAny(message, pipe_keywords) && !containsAny(message, joint_keywords) && !containsAny(message, report_keywords)) {
     
       srv.request.pipe = "short";
       pub_msg.data = "p";
@@ -101,8 +101,6 @@ public:
       if (client.call(srv))
       {
         ROS_INFO("pnp result: short pipe delivered");
-
-
         pipe_count++;
       }
       else
@@ -110,7 +108,7 @@ public:
         ROS_ERROR("Failed to call service panda_pnp_server");
       }
     }
-    if (containsAny(message, long_keywords) && containsAny(message, pipe_keywords)) {
+    if (containsAny(message, long_keywords) && containsAny(message, pipe_keywords) && !containsAny(message, joint_keywords) && !containsAny(message, report_keywords)) {
       srv.request.pipe = "long";
       pub_msg.data = "p";
 
@@ -129,7 +127,6 @@ public:
       if (client.call(srv))
       {
         ROS_INFO("pnp result: long pipe delivered");
-
         pipe_count++;
       }
       else
@@ -137,7 +134,7 @@ public:
         ROS_ERROR("Failed to call service panda_pnp_server");
       }
     }
-    if (containsAny(message, joint_keywords) && containsAny(message, report_keywords)) {
+    if (containsAny(message, joint_keywords) && containsAny(message, report_keywords) && !containsAny(message, long_keywords) && !containsAny(message, pipe_keywords)) {
       srv.request.pipe = "joint";
       pub_msg.data = "FAULTY";
 
@@ -153,6 +150,29 @@ public:
         ROS_ERROR("Failed to call service panda_pnp_server");
       }
     }
+    std::cout << "pipe count = " << pipe_count << std::endl;
+
+  // if(pipe_count==3){
+  //   std_msgs::String msg;
+  //   msg.data = "r0";
+  //   pub.publish(msg);
+  // }
+  // else if(pipe_count==11){
+  //   std_msgs::String msg;
+  //   msg.data = "r1";
+  //   pub.publish(msg);
+  // }
+  // else if(pipe_count==17){
+  //   std_msgs::String msg;
+  //   msg.data = "r2";
+  //   pub.publish(msg);
+  // }
+  // else if(pipe_count==24){
+  //   std_msgs::String msg;
+  //   msg.data = "r3";
+  //   pub.publish(msg);
+  // }
+
   }
 
 };//End of class SubscribeAndPublish
@@ -188,26 +208,7 @@ int main(int argc, char **argv)
   // ros::Subscriber sub = n.subscribe("speech_text", 100, Callback);
   // ros::Publisher pub = n.advertise<std_msgs::String>("text_to_speech", 1000);
 
-  if(SAP.pipe_count==3){
-    std_msgs::String msg;
-    msg.data = "r0";
-    SAP.pub.publish(msg);
-  }
-  else if(SAP.pipe_count==11){
-    std_msgs::String msg;
-    msg.data = "r1";
-    SAP.pub.publish(msg);
-  }
-  else if(SAP.pipe_count==17){
-    std_msgs::String msg;
-    msg.data = "r2";
-    SAP.pub.publish(msg);
-  }
-  else if(SAP.pipe_count==24){
-    std_msgs::String msg;
-    msg.data = "r3";
-    SAP.pub.publish(msg);
-  }
+
   ros::spin();
   return 0;
 }
